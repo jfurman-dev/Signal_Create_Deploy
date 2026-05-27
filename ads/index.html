@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Copado Context Hub — Ad Preview</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #080E16;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 56px;
+      padding: 64px 32px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .section-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .page-title {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,161,228,0.4); }
+      50%       { box-shadow: 0 0 0 14px rgba(0,161,228,0); }
+    }
+    @keyframes scanline {
+      0%   { transform: translateY(-4px); }
+      100% { transform: translateY(604px); }
+    }
+    @keyframes scanline43 {
+      0%   { transform: translateY(-4px); }
+      100% { transform: translateY(604px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-title">Ad Preview — Copado Context Hub</div>
+
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+
+  const BLUE     = "#00A1E4";
+  const NAVY     = "#0D1B2A";
+  const WHITE    = "#F0F6FF";
+  const MONO     = "'IBM Plex Mono', 'Courier New', monospace";
+  const SANS     = "'DM Sans', 'Helvetica Neue', sans-serif";
+  const CTA_URL  = "https://www.copado.com/solution-detail/data-360";
+
+  /* ── Shared primitives ─────────────────────────────────────────────── */
+
+  function GridLines() {
+    return (
+      <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.06, pointerEvents:"none" }}>
+        <defs>
+          <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+            <path d="M 32 0 L 0 0 0 32" fill="none" stroke={BLUE} strokeWidth="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+      </svg>
+    );
+  }
+
+  function GlowOrb({ style }) {
+    return (
+      <div style={{
+        position:"absolute", borderRadius:"50%", pointerEvents:"none",
+        background:`radial-gradient(circle, ${BLUE}55 0%, transparent 70%)`,
+        ...style
+      }} />
+    );
+  }
+
+  function Tag({ children }) {
+    return (
+      <div style={{
+        fontFamily: MONO, fontSize:10, fontWeight:600, letterSpacing:"0.18em",
+        color: BLUE, textTransform:"uppercase",
+        border:`1px solid ${BLUE}55`, borderRadius:2,
+        padding:"3px 8px", display:"inline-block", marginBottom:12,
+      }}>
+        {children}
+      </div>
+    );
+  }
+
+  function CTAButton() {
+    const [hovered, setHovered] = useState(false);
+    return (
+      <a
+        href={CTA_URL} target="_blank" rel="noopener noreferrer"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display:"inline-block", fontFamily:MONO, fontSize:11, fontWeight:600,
+          letterSpacing:"0.12em", textTransform:"uppercase",
+          color: hovered ? NAVY : BLUE,
+          background: hovered ? BLUE : "transparent",
+          border:`1.5px solid ${BLUE}`, borderRadius:2,
+          padding:"10px 20px", textDecoration:"none",
+          transition:"all 0.2s ease", cursor:"pointer", whiteSpace:"nowrap",
+        }}
+      >
+        See It In Action →
+      </a>
+    );
+  }
+
+  /* ── 1:1 Ad — 600×600 ──────────────────────────────────────────────── */
+
+  function Ad1x1() {
+    const [vis, setVis] = useState(false);
+    useEffect(() => { const t = setTimeout(() => setVis(true), 80); return () => clearTimeout(t); }, []);
+
+    const fade = (delay) => ({
+      opacity: vis ? 1 : 0,
+      transform: vis ? "translateY(0)" : "translateY(18px)",
+      transition: `all 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+    });
+
+    return (
+      <div style={{
+        width:600, height:600, background:NAVY, position:"relative",
+        overflow:"hidden", fontFamily:SANS,
+        display:"flex", flexDirection:"column", justifyContent:"space-between",
+        padding:40,
+      }}>
+        <GridLines />
+        <GlowOrb style={{ width:340, height:340, top:-90, right:-90 }} />
+        <GlowOrb style={{ width:220, height:220, bottom:30, left:-70 }} />
+
+        {/* Scanline */}
+        <div style={{
+          position:"absolute", left:0, right:0, height:2, pointerEvents:"none",
+          background:`linear-gradient(90deg, transparent, ${BLUE}33, transparent)`,
+          animation:"scanline 4s linear infinite",
+        }} />
+
+        {/* Top bar */}
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", ...fade(0) }}>
+          <div style={{ fontFamily:MONO, fontSize:11, color:`${BLUE}99`, letterSpacing:"0.15em" }}>
+            COPADO // CONTEXT HUB
+          </div>
+          <div style={{ width:8, height:8, borderRadius:"50%", background:BLUE, animation:"pulse 2.4s ease-in-out infinite" }} />
+        </div>
+
+        {/* Center */}
+        <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center" }}>
+          {/* Stat */}
+          <div style={fade(0.1)}>
+            <div style={{ fontFamily:MONO, fontSize:96, fontWeight:600, color:BLUE, lineHeight:1, letterSpacing:"-0.02em" }}>
+              98%
+            </div>
+            <div style={{ fontFamily:MONO, fontSize:11, color:`${BLUE}88`, letterSpacing:"0.2em", textTransform:"uppercase", marginTop:6, marginBottom:28 }}>
+              Deployment cost reduction
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{
+            width:48, height:2, marginBottom:24,
+            background:`linear-gradient(90deg, ${BLUE}, transparent)`,
+            opacity: vis ? 1 : 0, transition:"opacity 0.5s ease 0.3s",
+          }} />
+
+          {/* Headline + sub */}
+          <div style={fade(0.25)}>
+            <div style={{ fontFamily:SANS, fontSize:22, fontWeight:700, color:WHITE, lineHeight:1.25, marginBottom:12, maxWidth:380 }}>
+              The governance layer your Agentforce deployments have been missing.
+            </div>
+            <div style={{ fontFamily:SANS, fontSize:13, color:`${WHITE}88`, lineHeight:1.6, maxWidth:400 }}>
+              Metadata context + governed pipelines for Data360.
+              Know what changed. Control what deploys.
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", ...fade(0.5) }}>
+          <CTAButton />
+          <div style={{ fontFamily:MONO, fontSize:9, color:`${WHITE}33`, letterSpacing:"0.1em" }}>copado.com</div>
+        </div>
+
+        {/* Corner accents */}
+        <div style={{ position:"absolute", bottom:0, right:0, width:80, height:80, borderTop:`1px solid ${BLUE}33`, borderLeft:`1px solid ${BLUE}33`, pointerEvents:"none" }} />
+        <div style={{ position:"absolute", top:0, left:0, width:40, height:40, borderBottom:`1px solid ${BLUE}22`, borderRight:`1px solid ${BLUE}22`, pointerEvents:"none" }} />
+      </div>
+    );
+  }
+
+  /* ── 4:3 Ad — 800×600 ──────────────────────────────────────────────── */
+
+  function Ad4x3() {
+    const [vis, setVis] = useState(false);
+    useEffect(() => { const t = setTimeout(() => setVis(true), 80); return () => clearTimeout(t); }, []);
+
+    const fade = (delay) => ({
+      opacity: vis ? 1 : 0,
+      transform: vis ? "translateY(0)" : "translateY(16px)",
+      transition: `all 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+    });
+
+    const capabilities = [
+      "Metadata Context Awareness",
+      "Governed Pipeline Management",
+      "Audit-Ready by Default",
+    ];
+
+    return (
+      <div style={{
+        width:800, height:600, background:NAVY, position:"relative",
+        overflow:"hidden", fontFamily:SANS, display:"flex",
+      }}>
+        <GridLines />
+        <GlowOrb style={{ width:420, height:420, top:-130, left:-90 }} />
+        <GlowOrb style={{ width:280, height:280, bottom:-70, right:100 }} />
+
+        {/* Scanline */}
+        <div style={{
+          position:"absolute", left:0, right:0, height:2, pointerEvents:"none",
+          background:`linear-gradient(90deg, transparent, ${BLUE}22, transparent)`,
+          animation:"scanline43 5s linear infinite",
+        }} />
+
+        {/* Vertical divider */}
+        <div style={{
+          position:"absolute", left:340, top:40, bottom:40, width:1,
+          background:`linear-gradient(to bottom, transparent, ${BLUE}44, transparent)`,
+        }} />
+
+        {/* LEFT — stat panel */}
+        <div style={{
+          width:340, height:"100%", display:"flex", flexDirection:"column",
+          justifyContent:"center", padding:"48px 44px", position:"relative",
+        }}>
+          <div style={{ fontFamily:MONO, fontSize:10, color:`${BLUE}88`, letterSpacing:"0.2em", textTransform:"uppercase", marginBottom:32, opacity:vis?1:0, transition:"opacity 0.5s ease 0.1s" }}>
+            Copado // Context Hub
+          </div>
+
+          <div style={fade(0.15)}>
+            <div style={{ fontFamily:MONO, fontSize:108, fontWeight:600, color:BLUE, lineHeight:0.9, letterSpacing:"-0.03em" }}>
+              98%
+            </div>
+            <div style={{ fontFamily:MONO, fontSize:10, color:`${BLUE}77`, letterSpacing:"0.18em", textTransform:"uppercase", marginTop:10 }}>
+              Deployment cost<br />reduction
+            </div>
+          </div>
+
+          <div style={{ width:56, height:2, background:`linear-gradient(90deg, ${BLUE}, transparent)`, margin:"28px 0", opacity:vis?1:0, transition:"opacity 0.5s ease 0.4s" }} />
+
+          <div style={{ fontFamily:SANS, fontSize:12, color:`${WHITE}55`, lineHeight:1.6, opacity:vis?1:0, transition:"opacity 0.5s ease 0.5s" }}>
+            A leading Salesforce customer,<br />governed by Copado.
+          </div>
+
+          <div style={{ position:"absolute", bottom:48, left:44, width:8, height:8, borderRadius:"50%", background:BLUE, animation:"pulse 2.4s ease-in-out infinite" }} />
+        </div>
+
+        {/* RIGHT — copy panel */}
+        <div style={{ flex:1, display:"flex", flexDirection:"column", justifyContent:"center", padding:"48px 44px 48px 52px" }}>
+          <Tag>New · Data360</Tag>
+
+          <div style={fade(0.2)}>
+            <div style={{ fontFamily:SANS, fontSize:24, fontWeight:700, color:WHITE, lineHeight:1.2, marginBottom:14 }}>
+              The governance layer your Agentforce deployments have been missing.
+            </div>
+            <div style={{ fontFamily:SANS, fontSize:13, color:`${WHITE}77`, lineHeight:1.65, marginBottom:28 }}>
+              Copado Context Hub gives you full metadata visibility and governed
+              pipeline control for every Agentforce agent — before it reaches production.
+            </div>
+          </div>
+
+          <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:32 }}>
+            {capabilities.map((cap, i) => (
+              <div key={cap} style={{ display:"flex", alignItems:"center", gap:10, opacity:vis?1:0, transform:vis?"translateY(0)":"translateY(10px)", transition:`all 0.6s cubic-bezier(0.22,1,0.36,1) ${0.3 + i * 0.1}s` }}>
+                <div style={{ width:4, height:4, borderRadius:"50%", background:BLUE, flexShrink:0 }} />
+                <div style={{ fontFamily:MONO, fontSize:11, color:`${WHITE}88`, letterSpacing:"0.05em" }}>{cap}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ opacity:vis?1:0, transition:"opacity 0.5s ease 0.65s" }}>
+            <CTAButton />
+          </div>
+        </div>
+
+        {/* Corner accents */}
+        <div style={{ position:"absolute", top:0, right:0, width:60, height:60, borderBottom:`1px solid ${BLUE}33`, borderLeft:`1px solid ${BLUE}33`, pointerEvents:"none" }} />
+        <div style={{ position:"absolute", bottom:0, left:0, width:60, height:60, borderTop:`1px solid ${BLUE}22`, borderRight:`1px solid ${BLUE}22`, pointerEvents:"none" }} />
+      </div>
+    );
+  }
+
+  /* ── Preview harness ───────────────────────────────────────────────── */
+
+  function App() {
+    return (
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:56 }}>
+        <div>
+          <div className="section-label">1:1 — 600 × 600</div>
+          <Ad1x1 />
+        </div>
+        <div>
+          <div className="section-label">4:3 — 800 × 600</div>
+          <Ad4x3 />
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
