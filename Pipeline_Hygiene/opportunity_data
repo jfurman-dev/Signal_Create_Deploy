@@ -1,0 +1,52 @@
+WITH opps AS (
+  SELECT
+    o.opportunity_id,
+    o.account_id,
+    o.owner_id,
+    o.bdr_owner,
+    o.opportunity_owner_s_manager,
+    CAST(SAFE_CAST(o.created_date AS TIMESTAMP) AS STRING) AS created_date,
+    CAST(SAFE_CAST(o.sal_forecast_date AS DATE) AS STRING) AS sal_forecast_date,
+    o.opportunity_name AS name,
+    o.next_step,
+    o.bdr_qualification_notes,
+    o.description,
+    o.stage_name
+  FROM `copainsights.apo_opportunity` o
+  WHERE o.stage_name IN ('Discovery', 'Marketing Qualification')
+    AND o.next_step IS NOT NULL
+    AND o.next_step != 'None'
+    AND SAFE_CAST(o.sal_forecast_date AS DATE) <= DATE('2026-07-31')
+    AND o.bdr_qualification_notes IS NOT NULL
+    AND o.bdr_qualification_notes != 'None'
+    AND SAFE_CAST(o.created_date AS TIMESTAMP) >= TIMESTAMP('2026-07-01')
+),
+
+users AS (
+  SELECT 
+    id, 
+    name 
+  FROM `copainsights.users`
+)
+
+SELECT
+  o.opportunity_id,
+  o.account_id,
+  o.owner_id,
+  o.bdr_owner,
+  o.opportunity_owner_s_manager,
+  o.created_date,
+  o.sal_forecast_date,
+  o.name,
+  bdr.name AS name_bdr,
+  ae.name  AS name_ae,
+  o.next_step,
+  o.bdr_qualification_notes,
+  o.description,
+  o.stage_name
+FROM opps o
+LEFT JOIN users bdr ON o.bdr_owner = bdr.id
+LEFT JOIN users ae  ON o.owner_id  = ae.id
+ORDER BY 
+  o.sal_forecast_date ASC, 
+  o.created_date ASC;
