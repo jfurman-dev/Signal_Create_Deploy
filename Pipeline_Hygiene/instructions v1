@@ -1,0 +1,16 @@
+An appscript needs to be built to keep the company's pipeline from growing stale.
+
+For an opportunity to move into SS3 (Solution Alignment), it must have 
+1 - nextsteps defined
+2 - have a sal_forecast_date older than the date of interest
+3 - have recorded at least one gong call related to the opportunity
+
+In the data, nextsteps = next_step, sal_forecast_date = sal_forecast_date, and 
+gong calls related to the opportunity must have null SKIP_REASON, CALL_SPOTLIGHT_TYPE = 'sales_call', object_type = 'opportunity', and object_id = opportunity_id from the apo_data table
+
+To make this effective, we will only pull opportunity objects that were created in this fiscal year, in opportunity stage_name ('Marketing Qualification', 'Discovery'), with sal_forecast_date < end of current month, where bdr_qualification notes are not null or = "None"
+Point is that the sql query will provide the logics, but we will need to make it functional to be dynamic depending on the month or week of interest.
+
+I want to build an appscript that calls the sql queries from my datalake, taking the project, apo_dataset , gong_dataset, apo_location, and gong_location all as variable upfront in the script.
+
+The output will be a google sheet with the opportunity data and gong data populated.
