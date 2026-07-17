@@ -36,11 +36,11 @@
 var CONFIG = {
 
   // --- BigQuery project / dataset variables ---
-  PROJECT_ID: 'copainsights',        // GCP project ID used to run the query jobs (billing project)
+  PROJECT_ID: 'global-observability-863c',        // GCP project ID used to run the query jobs (billing project)
   APO_DATASET: 'copainsights',       // Dataset containing apo_opportunity and users tables
   GONG_DATASET: 'gong',              // Dataset containing CALLS and CONVERSATION_CONTEXTS tables
   APO_LOCATION: 'US',                // BigQuery location/region of the APO dataset
-  GONG_LOCATION: 'US',               // BigQuery location/region of the Gong dataset
+  GONG_LOCATION: 'us-central1',               // BigQuery location/region of the Gong dataset
 
   // --- Date of interest ---
   // Leave null to default to today. Otherwise set as 'YYYY-MM-DD', e.g. '2026-07-15'.
@@ -50,7 +50,7 @@ var CONFIG = {
   // --- Fiscal year settings ---
   // TODO: confirm this. Month number (1 = January ... 12 = December) that your fiscal year starts on.
   // Example: if FY starts Feb 1, set this to 2.
-  FISCAL_YEAR_START_MONTH: 1,
+  FISCAL_YEAR_START_MONTH: 2,
 
   // --- Gong call window settings ---
   // How many months before/after the "date of interest" month to pull Gong calls from.
@@ -353,6 +353,7 @@ function joinAndFilter_(opportunities, gongCalls) {
           gong_direction: call.DIRECTION,
           gong_disposition: call.DISPOSITION,
           gong_call_spotlight_brief: call.CALL_SPOTLIGHT_BRIEF
+          gong_call_spotlight_next_steps: call.CALL_SPOTLIGHT_NEXT_STEPS
         });
       });
     }
